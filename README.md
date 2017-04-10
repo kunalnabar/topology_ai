@@ -25,4 +25,4 @@ To show the image:
 To save the image:
 `python main.py "path" -sa "path-to-save"`
 
-The image will output as "answer.png in the path to save the image".
+The image will output as *answer.png* in the path to save the image.

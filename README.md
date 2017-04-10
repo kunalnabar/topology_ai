@@ -1,5 +1,5 @@
 ## System Description
-This system is a visual based artificial intelligence system to determine the "odd one out" in a specific set of images (images that outline specific types of topology for closure, connectedness, and an element being inside another element). The AI system can be given any of these inputs and will determine the image that does not adhere to the rules of the other images. This project was inspired by the paper *Core Knowledge of Geometry in an Amazonian Indigene Group* by Dehaene et al. A more in depth explanation of the project can be found in the *Topology_AI.pdf* file in the repository. 
+This system is a visual based artificial intelligence system to determine the "odd one out" in a specific set of images (images that outline specific types of topology for closure, connectedness, and an element being inside another element). The AI system can be given any of these inputs and will determine the image that does not adhere to the rules of the other images. This project was inspired by the paper *Core Knowledge of Geometry in an Amazonian Indigene Group* by Dehaene et al. A more in depth explanation of the project can be found in *Topology_AI.pdf*. 
 
 This project was developed for CS8395 at Vanderbilt University. All work represented here is my own. 
 

@@ -1,27 +1,16 @@
+# Kunal Nabar
+
 import os
 import sys
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-import random
+import time
 
 from topology_ai import solve
 
 # constants
-MTYPES = ['inside','closure','connectedness','holes']
-KSIZE = 1
-IDEAL_H = 250
-IDEAL_W = 300
-
-def determine_shrink(h,w):
-	if h < IDEAL_H or w < IDEAL_W:
-		return 1
-	sw = w // IDEAL_W
-	sh = h // IDEAL_H
-	return (sw + sh) // 2
-
-
-def init(method,sno):
+def init(p):
 	"""
 	Initialize the test set to the specific method and test set
 	
@@ -35,36 +24,48 @@ def init(method,sno):
 	:returns: the set of images specificed by the method and the set number
 	"""
 	# check assertions
-	assert method in MTYPES
 
 	# walk through all the files in the test set
 	image_set = []
-	path = os.path.join(*(os.curdir, method, sno))
+	path = os.path.join(*(os.curdir, p))
 	_,_,files = next(os.walk(path))
 	test_set = [os.path.join(path,f) for f in files]
-	for f in test_set:
-		im = cv2.imread(f,cv2.IMREAD_GRAYSCALE)
+	IS = [cv2.imread(f, cv2.IMREAD_GRAYSCALE) for f in test_set]
+	return files,IS
 
-		# shrink the image into a smaller one for faster processing
-		shrink = determine_shrink(*im.shape)
+# Read in the two parameters from the image set
 
-		nx,ny = (im.shape[0]//shrink, im.shape[1]//shrink)
-		im_shrink = cv2.resize(im, dsize=(nx,ny))
+if not sys.argv[1:]:
+	print("""Running the system:
+python main.py "path"
+	path: the path to the folder containing all image files
+The folder must only contain image files, even hidden files will cause a crash.
+The the path is relative to this main.py file.""")
+	sys.exit()
 
-		# blur the image to make thresholding easier
-		#im_blur = cv2.medianBlur(im_shrink, KSIZE)
+files,IS = init(*sys.argv[1:2])
+show_image = False
+save_image = False
+save_path = './'
+if len(sys.argv) == 3 and sys.argv[2] == '-sh':
+		show_image = True
+if len(sys.argv) == 4 and sys.argv[2] == '-sa':
+		save_image = True
+		save_path = sys.argv[3]
 
-		# Use Otsu's method to find the threshold for the binary image
-		# https://en.wikipedia.org/wiki/Otsu's_method
-		_, im_bw = cv2.threshold(im_shrink, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-		
-		image_set.append(im_bw)
-	return image_set
+start = time.time()
+s_index = solve(IS)
+dur = time.time()-start
 
+print("The different image is %s" % (files[s_index]))
+print("It took %.3f seconds." % (dur))
 
-image_set = init('closure','set1')
+if show_image:
+	imout = cv2.cvtColor(IS[s_index],cv2.COLOR_GRAY2BGRA)
+	plt.imshow(imout)
+	plt.show()
+if save_image:
+	imout = cv2.cvtColor(IS[s_index], cv2.COLOR_GRAY2BGRA)
+	cv2.imwrite(os.path.join(save_path, 'answer.png'), imout)
+	print('Answer in: %s' % (os.path.join(save_path, 'answer.png')))
 
-s_index = solve(image_set)
-
-plt.imshow(image_set[s_index])
-plt.show()
